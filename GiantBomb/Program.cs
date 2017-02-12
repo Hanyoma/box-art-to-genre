@@ -18,8 +18,17 @@ namespace GiantBomb
 	{
 		public static void Main(string[] args)
 		{
-			GiantBombPoller.getBoxArtByID("3030-4725");
-			
+			// GameIDs between 1 and 58285
+			int successCount = 0;
+			Random rnd = new Random();
+			while(successCount < 10){
+				int randomID = rnd.Next(1, 58285);
+				Console.WriteLine("Checking gameID: "+ randomID);
+				if (GiantBombPoller.downloadBoxArtByID("3030-"+randomID))
+				{
+					successCount++;
+				}
+		}
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
@@ -34,7 +43,7 @@ namespace GiantBomb
 		// A private API key, obtained from GiantBomb.com to use their database
 		private static string API_KEY = "eaaf363258bb7689b65331f7e0a4ae3dcbaf975c";
 			
-		public static bool getBoxArtByID(string gameID)
+		public static bool downloadBoxArtByID(string gameID)
 		{
 			// Create a webClient to make requests to GiantBomb
 			// Used: http://stackoverflow.com/questions/5566942/how-to-get-a-json-string-from-url
@@ -48,12 +57,17 @@ namespace GiantBomb
 				"/?api_key=" + API_KEY + "&format=json&field_list=game,image,name";
 			try{
 				string JSONResult = wb.DownloadString(gameRequest);
+				Console.WriteLine(JSONResult);
 				
 			// Deserialize the JSON so we can navigate it.
 			// Used: http://stackoverflow.com/questions/3142495/deserialize-json-into-c-sharp-dynamic-object/9326146#9326146
 			//		 for reference
 			JavaScriptSerializer serializer =  new JavaScriptSerializer();
 			dynamic item = serializer.Deserialize<object>(JSONResult);
+			if(item["error"] != "OK" || item["results"]["image"] == null)
+			{
+				return false;
+			}
 			// Get the URL for the boxArt, as well as the gameTitle
 			string boxArtURL = item["results"]["image"]["thumb_url"];
 			string gameTitle = item["results"]["name"];
