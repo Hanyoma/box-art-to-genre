@@ -1,0 +1,13 @@
+# Created from https://lostechies.com/derickbailey/2009/05/19/a-net-c-developer-s-gitignore-file/
+
+obj
+bin
+deploy
+deploy/*
+_ReSharper.*
+*.csproj.user
+*.resharper.user
+*.resharper
+*.suo
+*.cache
+~$*
